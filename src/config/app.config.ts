@@ -13,5 +13,8 @@ export default () => ({
   featureFlags: {
     newFeature: process.env.FEATURE_NEW_FEATURE === 'true',
     beta: process.env.FEATURE_BETA === 'true',
-  }
+  },
+  mongodb: {
+    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/issues',
+  },
 });
