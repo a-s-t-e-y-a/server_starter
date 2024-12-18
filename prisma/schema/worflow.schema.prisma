@@ -1,0 +1,33 @@
+model Workflow {
+    id        String         @id @default(auto()) @map("_id") @db.ObjectId
+    journalId String
+    name      String
+    steps     WorkflowStep[]
+    createdAt DateTime       @default(now())
+    updatedAt DateTime       @updatedAt
+
+    @@index([journalId])
+    @@index([createdAt])
+    @@index([journalId, createdAt])
+    @@map("workflows")
+}
+
+model WorkflowStep {
+    id         String    @id @default(auto()) @map("_id") @db.ObjectId
+    name       String
+    order      Int
+    status     Status    @default(PENDING)
+    startedAt  DateTime?
+    endedAt    DateTime?
+    workflowId String    @db.ObjectId
+    workflow   Workflow  @relation(fields: [workflowId], references: [id])
+
+    @@map("workflow_steps")
+}
+
+enum Status {
+    PENDING
+    IN_PROGRESS
+    COMPLETED
+    SKIPPED
+}

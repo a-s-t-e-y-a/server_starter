@@ -17,4 +17,9 @@ export default () => ({
   mongodb: {
     uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/issues',
   },
+  database: {
+    type: process.env.DATABASE_TYPE || 'postgres',
+    host: process.env.DATABASE_HOST || 'localhost',
+    port: parseInt(process.env.DATABASE_PORT, 10) || 5432,
+  },
 });

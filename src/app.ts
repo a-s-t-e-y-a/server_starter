@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PerformanceInterceptor } from './interceptors/performance.interceptor';
 import { BetterExceptionFilter } from './filters/better-exception.filter';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 export class Application {
   private readonly logger = new Logger(Application.name);
@@ -14,6 +15,7 @@ export class Application {
 
   async configure(): Promise<void> {
     await this.configureCors();
+    await this.configureTypeOrm();
     await this.configureSwagger();
     this.configureGlobalFilters();
     this.configureGlobalInterceptors();
@@ -23,6 +25,22 @@ export class Application {
     const corsConfig = this.configService.get('cors');
     this.app.enableCors(corsConfig);
     this.app.setGlobalPrefix('api');
+  }
+
+  private async configureTypeOrm(): Promise<void> {
+    const typeormConfig = this.configService.get('database');
+    await TypeOrmModule.forRoot({
+      type: typeormConfig.type,
+      host: typeormConfig.host,
+      port: typeormConfig.port,
+      username: typeormConfig.username,
+      password: typeormConfig.password,
+      database: typeormConfig.name,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: typeormConfig.synchronize,
+      logging: typeormConfig.logging,
+    });
+    this.logger.log('Database connection established');
   }
 
   private async configureSwagger(): Promise<void> {
